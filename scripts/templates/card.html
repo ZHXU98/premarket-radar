@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>盘前雷达 · 隔夜外盘数据简报</title>
+<style>
+  :root {
+    --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    --font-mono: "SF Mono", Menlo, Consolas, monospace;
+    --up: #e64340;
+    --down: #1e9e6b;
+    --nt: #9a9a94;
+    --ink: #1b1b1b;
+    --sub: #8a8a86;
+    --line: #ececec;
+    --tile: #f7f7f5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font-sans);
+    background: #f0f0ee;
+    display: flex;
+    justify-content: center;
+    padding: 28px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .card {
+    width: 440px;
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.06);
+  }
+
+  /* ---------- Header ---------- */
+  .hd {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 20px;
+    background: linear-gradient(120deg, #e64340 0%, #f0665f 100%);
+    color: #fff;
+  }
+  .hd-left { display: flex; align-items: center; gap: 12px; }
+  .logo {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: rgba(255,255,255,0.18);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .hd-title { font-size: 16px; font-weight: 600; letter-spacing: 0.5px; }
+  .hd-sub { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+  .hd-right { text-align: right; }
+  .hd-date { font-family: var(--font-mono); font-size: 14px; font-weight: 600; }
+  .hd-wk { font-size: 11px; opacity: 0.85; margin-top: 2px; }
+
+  /* ---------- Data sections ---------- */
+  .body { padding: 4px 20px 18px; }
+  .sec-title {
+    font-size: 12px; font-weight: 600; color: var(--sub);
+    margin: 18px 0 9px; display: flex; align-items: center; gap: 6px;
+  }
+  .sec-title::before {
+    content: ""; width: 3px; height: 12px; border-radius: 2px;
+    background: var(--up);
+  }
+  .grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  }
+  .m {
+    background: var(--tile); border-radius: 11px; padding: 11px 12px;
+  }
+  .m-name { font-size: 11px; color: var(--sub); margin-bottom: 5px; }
+  .m-val {
+    font-family: var(--font-mono); font-size: 16px; font-weight: 600;
+    line-height: 1.2; display: flex; align-items: baseline; gap: 5px;
+    flex-wrap: wrap;
+  }
+  .m-delta { font-size: 11px; font-weight: 600; }
+  .m-sub { font-size: 10px; color: #b4b2a9; margin-top: 5px; font-family: var(--font-mono); }
+  .rk-up { color: var(--up); }
+  .rk-dn { color: var(--down); }
+  .rk-nt { color: var(--nt); }
+  .legend { font-size: 10px; color: #b4b2a9; text-align: right; margin-top: 7px; }
+
+  /* ---------- News ---------- */
+  .news-hd {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin: 20px 0 9px;
+  }
+  .news-hd .sec-title { margin: 0; }
+  .news-count { font-size: 11px; color: var(--sub); font-family: var(--font-mono); }
+  .news-list { border-top: 1px solid var(--line); }
+  .n {
+    padding: 9px 0; border-bottom: 1px solid var(--line);
+    display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  }
+  .n-tag {
+    font-size: 10px; color: #c0392b; background: #fdeceb;
+    border-radius: 4px; padding: 1px 6px; flex: none;
+  }
+  .n-time { font-size: 10px; color: #b4b2a9; font-family: var(--font-mono); flex: none; }
+  .n-title { font-size: 13px; color: var(--ink); line-height: 1.5; text-decoration: none; }
+  .n-title:hover { color: var(--up); text-decoration: underline; }
+  .n-empty { font-size: 12px; color: var(--sub); padding: 14px 0; text-align: center; }
+
+  /* ---------- Footer ---------- */
+  .ft {
+    border-top: 1px solid var(--line); padding: 12px 20px 16px;
+    background: #fafaf8;
+  }
+  .ft-line { font-size: 10.5px; color: var(--sub); line-height: 1.6; }
+  .ft-src { font-size: 10.5px; color: #b4b2a9; margin-top: 4px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="hd">
+      <div class="hd-left">
+        <div class="logo">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="9" stroke="#fff" stroke-width="1.6" opacity="0.9"/>
+            <circle cx="12" cy="12" r="5.5" stroke="#fff" stroke-width="1.2" opacity="0.6"/>
+            <path d="M12 12 L18.5 7" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>
+            <circle cx="12" cy="12" r="1.8" fill="#fff"/>
+          </svg>
+        </div>
+        <div>
+          <div class="hd-title">盘前雷达</div>
+          <div class="hd-sub">隔夜外盘 · 盘前数据简报</div>
+        </div>
+      </div>
+      <div class="hd-right">
+        <div class="hd-date">{{date}}</div>
+        <div class="hd-wk">{{weekday}} · 盘前</div>
+      </div>
+    </div>
+
+    <div class="body">
+      {{groups}}
+      <div class="legend">红 = 涨（利多） · 绿 = 跌（利空）· 数据截至 {{ts}}</div>
+
+      <div class="news-hd">
+        <div class="sec-title">重要新闻</div>
+        <div class="news-count">近 {{news_window}}h · {{news_total}} 条</div>
+      </div>
+      <div class="news-list">
+        {{news}}
+      </div>
+    </div>
+
+    <div class="ft">
+      <div class="ft-line">数据仅供研究参考，不构成任何投资建议。市场有风险，投资需谨慎。</div>
+      <div class="ft-src">行情源：腾讯 / 新浪 / 东方财富　新闻源：{{news_source}}</div>
+    </div>
+  </div>
+</body>
+</html>

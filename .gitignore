@@ -1,0 +1,10 @@
+# 生成产物
+output/
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# SkillHub 本机安装元数据（含账号/命名空间信息，不入库）
+_meta.json
+_skillhub_meta.json
